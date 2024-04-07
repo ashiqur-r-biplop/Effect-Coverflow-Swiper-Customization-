@@ -8,9 +8,12 @@
     font-family: "Poppins", sans-serif;
 }
 
+.container {
+    max-width: 1346px;
+    margin: 0px auto;
+}
 
 .wrapper {
-    max-width: 1100px;
     width: 100%;
     position: relative;
 }
@@ -29,6 +32,7 @@
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23);
     transform: translateY(-50%);
     transition: transform 0.1s linear;
+    z-index: 99999;
 }
 
 .wrapper i:active {
@@ -50,9 +54,10 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     gap: 16px;
-    border-radius: 8px;
     scroll-behavior: smooth;
     scrollbar-width: none;
+    width: 100%;
+    padding-bottom: 80px;
 }
 
 .carousel::-webkit-scrollbar {
@@ -71,6 +76,7 @@
 .carousel.dragging .card {
     cursor: grab;
     user-select: none;
+    justify-content: center;
 }
 
 .carousel :where(.card, .img) {
@@ -81,24 +87,25 @@
 
 .carousel .card {
     scroll-snap-align: start;
-    height: 342px;
+    height: 460px;
+    width: 460px;
     list-style: none;
     background: #fff;
-    cursor: pointer;
-    padding-bottom: 15px;
+    cursor: grab;
     flex-direction: column;
-    border-radius: 8px;
+    -webkit-box-reflect: below 1px linear-gradient(transparent, transparent, #0006);
+
 }
 
 .carousel .card .img {
-    width: 340px;
-    height: 340px;
-    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+
 }
 
 .card .img img {
-    width: 340px;
-    height: 340px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
@@ -111,6 +118,22 @@
 .carousel .card span {
     color: #6A6D78;
     font-size: 1.31rem;
+}
+
+/* Add this CSS to style the middle slide and rotate side slides */
+.active {
+    border: 1px solid red !important;
+    border-radius: 10px;
+}
+
+
+.inactive {
+    transition-duration: 0ms;
+    transform-style: preserve-3d;
+    transform: translate3d(0px, 0px, -200px) rotateX(0deg) rotateY(50deg) scale(1);
+    transition: transform transform-style ease-in-out;
+    width: 460px;
+    height: 460px;
 }
 
 @media screen and (max-width: 900px) {
