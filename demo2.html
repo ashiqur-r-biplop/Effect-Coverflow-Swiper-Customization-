@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!-- Website - www.codingnepalweb.com -->
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Demo slide</title>
+    <link rel="stylesheet" href="style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Fontawesome Link for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" />
+    <link rel="stylesheet" href="demo.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="wrapper">
+            <i id="left" class="fa-solid fa-angle-left"></i>
+            <ul class="carousel">
+                <li class="card">
+                    <div class="img" draggable="false"
+                        style="background-image: url(https://storage.googleapis.com/msgsndr/80KMFGeXGj9bE58716Qx/media/660ef336095a7c2d2f713fcb.jpeg);">
+                        <!-- <img src="" alt="img" /> -->
+                    </div>
+                </li>
+                <li class="card">
+                    <div class="img" draggable="false"
+                        style="background-image: url(https://storage.googleapis.com/msgsndr/80KMFGeXGj9bE58716Qx/media/660ef3366a72ec065bbb4543.jpeg);">
+                        <!-- <img src="" alt="img" /> -->
+                    </div>
+                </li>
+                <li class="card">
+                    <div class="img" draggable="false"
+                        style="background-image: url(https://storage.googleapis.com/msgsndr/80KMFGeXGj9bE58716Qx/media/660ef336095a7c2d2f713fcb.jpeg);">
+                        <!-- <img src="" alt="img" /> -->
+                    </div>
+                </li>
+                <li class="card">
+                    <div class="img" draggable="false"
+                        style="background-image: url(https://storage.googleapis.com/msgsndr/80KMFGeXGj9bE58716Qx/media/660ef3361b9f46d14f875290.jpeg);">
+                        <!-- <img src="" alt="img" /> -->
+                    </div>
+                </li>
+                <li class="card">
+                    <div class="img" draggable="false"
+                        style="background-image: url(https://storage.googleapis.com/msgsndr/80KMFGeXGj9bE58716Qx/media/660ef3376a72ecbcf4bb4544.jpeg);">
+                        <!-- <img src="" alt="img" /> -->
+                    </div>
+                </li>
+                <li class="card">
+                    <div class="img" draggable="false"
+                        style="background-image: url(https://storage.googleapis.com/msgsndr/80KMFGeXGj9bE58716Qx/media/660ef336095a7c47de713fcc.jpeg);">
+                        <!-- <img src="" alt="img" /> -->
+                    </div>
+                </li>
+            </ul>
+            <i id="right" class="fa-solid fa-angle-right"></i>
+        </div>
+    </div>
+    <script>
+        var wrapper = document.querySelector(".wrapper");
+        var carousel = document.querySelector(".carousel");
+        var firstCardWidth = carousel.querySelector(".card").offsetWidth;
+        var arrowBtns = document.querySelectorAll(".wrapper i");
+        var isScrolling = false;
+        var carouselChildrens = [].slice.call(carousel.children);
+
+        var isDragging = false,
+            isAutoPlay = true,
+            startX,
+            startScrollLeft,
+            timeoutId;
+
+        // Get the number of cards that can fit in the carousel at once
+        var cardPerView = Math.round(carousel.offsetWidth / firstCardWidth);
+        // Insert copies of the last few cards to beginning of carousel for infinite scrolling
+
+        carouselChildrens
+            .slice(-cardPerView)
+            .reverse()
+            .forEach(function (card, index) {
+                carousel.insertAdjacentHTML("afterbegin", card.outerHTML);
+            });
+
+        // Insert copies of the first few cards to end of carousel for infinite scrolling
+        carouselChildrens.slice(0, cardPerView).forEach(function (card, index) {
+            carousel.insertAdjacentHTML("beforeend", card.outerHTML);
+        });
+
+        // Scroll the carousel at appropriate postition to hide first few duplicate cards on Firefox
+        carousel.classList.add("no-transition");
+        carousel.scrollLeft = carousel.offsetWidth;
+        carousel.classList.remove("no-transition");
+
+        // Add event listeners for the arrow buttons to scroll the carousel left and right
+        arrowBtns.forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                carousel.scrollLeft +=
+                    btn.id == "left" ? -firstCardWidth : firstCardWidth;
+            });
+        });
+
+        function dragStart(e) {
+            isDragging = true;
+            carousel.classList.add("dragging");
+            // Records the initial cursor and scroll position of the carousel
+            startX = e.pageX;
+            startScrollLeft = carousel.scrollLeft;
+        };
+
+        function dragging(e) {
+            if (!isDragging) return; // if isDragging is false return from here
+            // Updates the scroll position of the carousel based on the cursor movement
+            carousel.scrollLeft = startScrollLeft - (e.pageX - startX);
+        };
+
+        function dragStop() {
+            isDragging = false;
+            carousel.classList.remove("dragging");
+        };
+
+        function infiniteScroll() {
+            // If the carousel is at the beginning, scroll to the end
+            if (carousel.scrollLeft === 0) {
+                carousel.classList.add("no-transition");
+
+                carousel.scrollLeft = carousel.scrollWidth - 2 * carousel.offsetWidth;
+                carousel.classList.remove("no-transition");
+            }
+            // If the carousel is at the end, scroll to the beginning
+            else if (
+                Math.ceil(carousel.scrollLeft) ===
+                carousel.scrollWidth - carousel.offsetWidth
+            ) {
+                carousel.classList.add("no-transition");
+                carousel.scrollLeft = carousel.offsetWidth;
+                carousel.classList.remove("no-transition");
+            }
+
+            // Clear existing timeout & start autoplay if mouse is not hovering over carousel
+            clearTimeout(timeoutId);
+            if (!wrapper.matches(":hover")) autoPlay();
+        };
+
+        function autoPlay() {
+            if (window.innerWidth < 800 || !isAutoPlay) return; // Return if window is smaller than 800 or isAutoPlay is false
+            // Autoplay the carousel after every 2500 ms
+            timeoutId = setTimeout(function () { carousel.scrollLeft += firstCardWidth }, 2500);
+        };
+        autoPlay();
+
+        function applyActiveClass() {
+            var containerWidth = carousel.clientWidth;
+            var midpoint = containerWidth / 2;
+            var firstCardPosition = carousel.scrollLeft;
+            var middleCardIndex = Math.floor(
+                (firstCardPosition + midpoint) / firstCardWidth
+            );
+
+            var cards = document.querySelectorAll(".card");
+            cards.forEach(function (card, index) {
+                if (index === middleCardIndex) {
+                    card.classList.remove("inactive");
+                    card.classList.add("active");
+                    card.classList.remove("right-inactive");
+                    card.classList.remove("left-inactive");
+                } else {
+                    if (index === middleCardIndex - 1) {
+                        card.classList.add("left-inactive");
+                        card.classList.remove("right-inactive");
+                        card.classList.remove("active");
+                    } else if (index === middleCardIndex + 1) {
+                        card.classList.remove("left-inactive");
+                        card.classList.add("right-inactive");
+                        card.classList.remove("active");
+                    } else {
+                        card.classList.remove("active");
+                        card.classList.add("inactive");
+                        card.classList.remove("right-inactive");
+                        card.classList.remove("left-inactive");
+                    }
+                }
+            });
+        };
+        carousel.addEventListener("mousedown", dragStart);
+        carousel.addEventListener("mousemove", dragging);
+        document.addEventListener("mouseup", dragStop);
+        carousel.addEventListener("scroll", function () {
+            infiniteScroll();
+            applyActiveClass();
+        });
+        wrapper.addEventListener("mouseenter", function () { clearTimeout(timeoutId) });
+        wrapper.addEventListener("mouseleave", function () {
+            autoPlay();
+        });
+
+    </script>
+</body>
+
+</html>
